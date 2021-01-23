@@ -39,11 +39,11 @@ analyze_data <- function(data){
   hist(exp_q, col=rgb(1,0,0,0.5), breaks=bins, main="", xlab="", ylab="Overlapping Histrogram")
   hist(data, col=rgb(0,0,1,0.5), breaks=bins, add=TRUE)
   legend("topright", legend=c("Exponential", "data"),
-         col=c(rgb(1,0,0), rgb(0,0,1)), pch=c(15,15), cex=c(1,1))
+         col=c(rgb(1,0,0, 0.5), rgb(0,0,1, 0.5)), pch=c(15,15), cex=c(1,1))
   hist(log_q, col=rgb(1,0,0,0.5), breaks=bins, main="", xlab="", ylab="")
   hist(data, col=rgb(0,0,1,0.5), breaks=bins, add=TRUE)
   legend("topright", legend=c("Lognormal", "data"),
-         col=c(rgb(1,0,0), rgb(0,0,1)), pch=c(15,15), cex=c(1,1))
+         col=c(rgb(1,0,0, 0.5), rgb(0,0,1, 0.5)), pch=c(15,15), cex=c(1,1))
   
   # chi-square goodness-of-fit test
   ind = c(0)
@@ -55,11 +55,11 @@ analyze_data <- function(data){
   p_exp = 0
   for(i in seq(0, 9.5, 0.5)){
     # Extend interval
-    p_log = p_log + pnorm(log(i+1), mean=log_mean, sd=log_sd) - pnorm(log(i), mean=log_mean, sd=log_sd)
-    p_exp = p_exp + pexp(i+1, rate=exp_lam) - pexp(i, rate=exp_lam)
-    Z = Z + sum(data >= i & data < i + 1)
+    p_log = p_log + pnorm(log(i+0.5), mean=log_mean, sd=log_sd) - pnorm(log(i), mean=log_mean, sd=log_sd)
+    p_exp = p_exp + pexp(i+0.5, rate=exp_lam) - pexp(i, rate=exp_lam)
+    Z = Z + sum(data >= i & data < i + 0.5)
     # Rule of thumb: np > 5
-    if(n * min(p_exp, p_log) > 5 || i == 9.5){
+    if(n * min(p_exp, p_log) > 5){
       ind = c(ind, i + 0.5)
       Zs = c(Zs, Z)
       p_logs = c(p_logs, n * p_log)
@@ -69,6 +69,11 @@ analyze_data <- function(data){
       p_exp = 0
     }
   }
+  # Rest
+  ind = c(ind, Inf)
+  Zs = c(Zs, n - sum(Zs))
+  p_logs = c(p_logs, n - sum(p_logs))
+  p_exps = c(p_exps, n - sum(p_exps))
   
   # Output results
   cat("interval  |")
@@ -111,7 +116,9 @@ analyze_data <- function(data){
   test("logn:", chi_log, 2)
   test("exp: ", chi_exp, 1)
   
-    
+  # test from library (with wrong df)
+  # chisq.test(Zs, p=p_logs/n)
+  # chisq.test(Zs, p=p_exps/n)
 }
 
 data = read.csv("Sheet_10/measurement.csv")$data
