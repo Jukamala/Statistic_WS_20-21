@@ -1,9 +1,8 @@
 bin_conf <- function(n, p, alpha){
-  # confidence interval for binomial data (from Ex8.1)
+  # confidence interval for binomial r.v. (from Ex8.1)
   
   low = qbinom(alpha/2, n, p) + 1
   up = qbinom(alpha/2, n, p, lower.tail=FALSE)
-  level = pbinom(up, n, p) - pbinom(low-1, n, p)
   return(c(low, up))
 }
 
@@ -20,6 +19,7 @@ wald_test <- function(Ns, M, alpha, lam_0){
       lam = mean(data)
       W = n * (lam - lam_0)^2 / lam
       if(W >= q){
+        # rejection
         size = size + 1/M
       }
     }
@@ -29,7 +29,7 @@ wald_test <- function(Ns, M, alpha, lam_0){
   plot(Ns, 100 * sizes, type="l", xlab="N", ylab="Error of Type I [ in %]", col="dodgerblue",
        main=sprintf("Wald test (alpha = %d %%)", 100 * alpha))
   # M * size(n) ~ Bin(M, pI(n)), because we have M independent tests which are rejected with p=pI(n).
-  # pI(n) -> alpha as n -> inf, so we can construct an confidence interval for
+  # pI(n) -> alpha as n -> inf, so we can construct a confidence interval for
   # the estimator size(n) when pI(n) is close to alpha.
   conf = bin_conf(M, alpha, 0.05)
   abline(h=100 * alpha, col="darkorange")

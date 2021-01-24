@@ -26,8 +26,8 @@ analyze_data <- function(data){
   log_q = exp(qnorm(levels, mean=log_mean, sd=log_sd))
   exp_q = qexp(levels, rate=exp_lam)
   
-  # Visual analysis shows that the lognormal data fits a bit better to the data,
-  # although both seem to be a good fit
+  # Visual analysis shows that the lognormal data fits (very slightly) better to the data,
+  # although both seem to be a very good fit
   par(mfrow=c(2,2))
   # QQ-Plots
   qqplot(data, exp_q, col="dodgerblue", pch=20, main="Exponential data", ylab="QQ-Plot")
@@ -119,6 +119,8 @@ analyze_data <- function(data){
   # test from library (with wrong df)
   # chisq.test(Zs, p=p_logs/n)
   # chisq.test(Zs, p=p_exps/n)
+  
+  # In summary, the statistical test shows that both distributions are a very good fit for the data.
 }
 
 data = read.csv("Sheet_10/measurement.csv")$data
